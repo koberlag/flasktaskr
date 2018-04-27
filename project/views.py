@@ -2,8 +2,10 @@
 
 import sqlite3
 from functools import wraps
-from flask import Flask, flash, redirect, render_template, \
-    request, session, url_for, g
+
+from flask import (Flask, flash, g, redirect, render_template, request,
+                   session, url_for)
+
 from forms import AddTaskForm
 
 # config
@@ -26,7 +28,7 @@ def login_required(test):
         else:
             flash('You need to login first.')
             return redirect(url_for('login'))
-        return wrap
+    return wrap
 
 
 #route handlers
@@ -90,7 +92,7 @@ def new_task():
         return redirect(url_for('tasks'))
     else:
         g.db.execute('insert into tasks (name, due_date, priority, status) \
-            value(?, ?, ?, 1)', [
+            values (?, ?, ?, 1)', [
                 request.form['name'],
                 request.form['due_date'],
                 request.form['priority']
@@ -101,26 +103,26 @@ def new_task():
         flash('New entry was successfully posted. Thanks.')
     return redirect(url_for('tasks'))
 
-    # Mark tasks as complete
-    @app.route('/complete/<int:task_id>/')
-    @login_required
-    def complete(task_id):
-        g.db = connect_db()
-        g.db.execute(
-            'update tasks set status = 0 where task_id='+str(task_id)
-        )
-        g.db.commit()
-        g.db.close()
-        flash('The task was marked as complete.')
-        return redirect(url_for('tasks'))
+# Mark tasks as complete
+@app.route('/complete/<int:task_id>/')
+@login_required
+def complete(task_id):
+    g.db = connect_db()
+    g.db.execute(
+        'update tasks set status = 0 where task_id='+str(task_id)
+    )
+    g.db.commit()
+    g.db.close()
+    flash('The task was marked as complete.')
+    return redirect(url_for('tasks'))
     
-    # Delete Tasks
-    @app.route('/delete/<int:task_id>/')
-    @login_required
-    def delete_entry(task_id):
-        g.db = connect_db()
-        g.db.execute('delete from tasks where task_id='+str(task_id))
-        g.db.commit()
-        g.db.close()
-        flash('The task was deleted.')
-        return redirect(url_for('tasks'))
+# Delete Tasks
+@app.route('/delete/<int:task_id>/')
+@login_required
+def delete_entry(task_id):
+    g.db = connect_db()
+    g.db.execute('delete from tasks where task_id='+str(task_id))
+    g.db.commit()
+    g.db.close()
+    flash('The task was deleted.')
+    return redirect(url_for('tasks'))
