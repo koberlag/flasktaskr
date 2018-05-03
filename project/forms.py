@@ -43,7 +43,7 @@ class RegisterForm(FlaskForm):
 class LoginForm(FlaskForm):
     name = StringField(
         'Username',
-        validator=[DataRequired()]
+        validators=[DataRequired()]
     )
     password = PasswordField(
         'Password',
